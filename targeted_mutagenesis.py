@@ -34,6 +34,7 @@ valid_aa = 'GAVLIMFWPSTCYNQDEKRH*'
 
 
 """
+Get a list of all nucleotides for the amino acids at pos1, pos2, and pos3. Convert to sets
 Create a dict of sets for position one, position two, and position 3
 Items in a set are unique. We can not have a set that contains two items that are equal. This is important when creating.
 use is subset
@@ -41,6 +42,7 @@ Find the expanded code that intersects with each list, ie all of the letters con
 
 """
 
+####################################################################
 
 pos_dict = {
     'pos1' : {'A', 'G'},
@@ -52,6 +54,15 @@ pos_dict = {
 aa_list = {key:value for (key,value) in expanded_code.items() if pos_dict['pos2'].issubset(set(expanded_code[key]))}
 print(aa_list)
 # (pos_dict['pos2'].issubset(set(expanded_code['C'])))
+
+# this way will keep the key value pair if any nucleotide in that postion is present
+pos2_dict = {key:value for (key,value) in expanded_code.items() if len(pos_dict['pos2'].intersection(set(expanded_code[key]))) > 0}
+# print(pos2_dict)
+
+print(len(pos_dict['pos2'].intersection(set(expanded_code['G']))))
+
+
+####################################################################
 
 
 def get_codon_for_amino_acids(amino_acids):
