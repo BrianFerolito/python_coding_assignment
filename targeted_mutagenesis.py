@@ -53,14 +53,6 @@ aa_list = {key:value for (key,value) in expanded_code.items() if pos_dict['pos2'
 print(aa_list)
 # (pos_dict['pos2'].issubset(set(expanded_code['C'])))
 
-# for key,value in expanded_code.items():
-#     print('key')
-#     print(type(key))
-#     print(key)
-#     print('value')
-#     print(type(value))
-#     print(value)
-
 
 def get_codon_for_amino_acids(amino_acids):
     """
