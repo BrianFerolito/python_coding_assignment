@@ -47,14 +47,11 @@ Find the expanded code that intersects with each list, ie all of the letters con
 
 test_set = {'A', 'I', 'V'}
 
-#assert statements checking to make sure the amino acid exixts in the translatable
-pos1_list = [nuc[0] for nuc, amino in translation_table.items() if amino in test_set]
-pos2_list = [nuc[1] for nuc, amino in translation_table.items() if amino in test_set]
-pos3_list = [nuc[2] for nuc, amino in translation_table.items() if amino in test_set]
 
-pos1_set = set(pos1_list)
-pos2_set = set(pos2_list)
-pos3_set = set(pos3_list)
+#assert statements checking to make sure the amino acid exixts in the translatable
+pos1_set = {nuc[0] for nuc, amino in translation_table.items() if amino in test_set}
+pos2_set = {nuc[1] for nuc, amino in translation_table.items() if amino in test_set}
+pos3_set = {nuc[2] for nuc, amino in translation_table.items() if amino in test_set}
 
 print('Pos 1:')
 print(pos1_set)
@@ -88,6 +85,7 @@ comb = (set(product(pos1_dict.keys(), pos2_dict.keys(),pos3_dict.keys())))
 
 for combinations in comb:
     print((combinations))
+
 ####################################################################
 
 
