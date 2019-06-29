@@ -43,11 +43,32 @@ Find the expanded code that intersects with each list, ie all of the letters con
 """
 
 ####################################################################
+# get nucleotide lists
+
+test_set = {'A', 'I', 'V'}
+
+#assert statements checking to make sure the amino acid exixts in the translatable
+pos1_list = [nuc[0] for nuc, amino in translation_table.items() if amino in test_set]
+pos2_list = [nuc[1] for nuc, amino in translation_table.items() if amino in test_set]
+pos3_list = [nuc[2] for nuc, amino in translation_table.items() if amino in test_set]
+
+pos1_set = set(pos1_list)
+pos2_set = set(pos2_list)
+pos3_set = set(pos3_list)
+
+print('Pos 1:')
+print(pos1_set)
+print('Pos 2:')
+print(pos2_set)
+print('Pos 3:')
+print(pos3_set)
+
+####################################################################
 
 pos_dict = {
-    'pos1' : {'A', 'G'},
-    'pos2' : {'T', 'C'},
-    'pos3' : {'T', 'C', 'A', 'G'}
+    'pos1' : pos1_set,
+    'pos2' : pos2_set,
+    'pos3' : pos3_set
 }
 
 # This collects all the expanded codes containing the amino acids
