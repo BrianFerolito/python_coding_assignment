@@ -71,7 +71,7 @@ pos_dict = {
 # This collects all the expanded codes containing all the amino acids
 pos1_dict = {key:value for (key,value) in expanded_code.items() if pos_dict['pos1'].issubset(set(expanded_code[key]))}
 pos2_dict = {key:value for (key,value) in expanded_code.items() if pos_dict['pos2'].issubset(set(expanded_code[key]))}
-pos3_dict = {key:value for (key,value) in expanded_code.items() if pos_dict['pos3'].issubset(set(expanded_code[key]))}
+# pos3_dict = {key:value for (key,value) in expanded_code.items() if pos_dict['pos3'].issubset(set(expanded_code[key]))}
 
 # print(pos1_code_dict)
 
@@ -79,7 +79,9 @@ pos3_dict = {key:value for (key,value) in expanded_code.items() if pos_dict['pos
 # this way will keep the key value pair if any nucleotide in that postion is present
 # pos1_dict = {key:value for (key,value) in expanded_code.items() if len(pos_dict['pos1'].intersection(set(expanded_code[key]))) > 0}
 # pos2_dict = {key:value for (key,value) in expanded_code.items() if len(pos_dict['pos1'].intersection(set(expanded_code[key]))) > 0}
-# pos3_dict = {key:value for (key,value) in expanded_code.items() if len(pos_dict['pos1'].intersection(set(expanded_code[key]))) > 0}
+
+
+pos3_dict = {key:value for (key,value) in expanded_code.items() if len(pos_dict['pos3'].intersection(set(expanded_code[key]))) > 0}
 
 comb = (set(product(pos1_dict.keys(), pos2_dict.keys(),pos3_dict.keys())))
 
