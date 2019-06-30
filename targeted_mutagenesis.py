@@ -37,40 +37,40 @@ valid_aa = 'GAVLIMFWPSTCYNQDEKRH*'
 ####################################################################
 
 
-test_set = {'A', 'I', 'V'}
+# test_set = {'A', 'I', 'V'}
 
-test_length = len(test_set)
+# test_length = len(test_set)
 
-comb = set(product(expanded_code.keys(), expanded_code.keys(),expanded_code.keys()))
-comb_list = [combinations for combinations in comb]
+# comb = set(product(expanded_code.keys(), expanded_code.keys(),expanded_code.keys()))
+# comb_list = [combinations for combinations in comb]
 
-coded_dict = {}
-for expanded in comb_list:
-    trip_list = (set(product(expanded_code[expanded[0]], expanded_code[expanded[1]], expanded_code[expanded[2]])))
-    trip_strings = [''.join(triplets) for triplets in trip_list]
+# coded_dict = {}
+# for expanded in comb_list:
+#     trip_list = (set(product(expanded_code[expanded[0]], expanded_code[expanded[1]], expanded_code[expanded[2]])))
+#     trip_strings = [''.join(triplets) for triplets in trip_list]
 
-    # get list of amino acids from the triplets
-    amino_acids = {amino for trip, amino in translation_table.items() if trip in trip_strings}
-    if test_set.issubset(amino_acids): 
-        # print(''.join(expanded))
-        # print(amino_acids)
-        # print(test_length/len(amino_acids))
+#     # get list of amino acids from the triplets
+#     amino_acids = {amino for trip, amino in translation_table.items() if trip in trip_strings}
+#     if test_set.issubset(amino_acids): 
+#         # print(''.join(expanded))
+#         # print(amino_acids)
+#         # print(test_length/len(amino_acids))
 
-        coded_dict[''.join(expanded)] = round(test_length/len(amino_acids), 2)
+#         coded_dict[''.join(expanded)] = round(test_length/len(amino_acids), 2)
     
-    else:
-        pass
+#     else:
+#         pass
 
-# print(coded_dict)
-# print(sorted(coded_dict.items(), key=lambda x: x[1], reverse=True))
-ordered_list = sorted(coded_dict.items(), key=lambda x: x[1], reverse=True)
+# # print(coded_dict)
+# # print(sorted(coded_dict.items(), key=lambda x: x[1], reverse=True))
+# ordered_list = sorted(coded_dict.items(), key=lambda x: x[1], reverse=True)
 
-highest = ordered_list[0][1]
+# highest = ordered_list[0][1]
 
-efficient_codons = {codon[0] for codon in ordered_list if codon[1] == highest}
-answer = (efficient_codons, highest)
+# efficient_codons = {codon[0] for codon in ordered_list if codon[1] == highest}
+# answer = (efficient_codons, highest)
 
-print(answer)
+# print(answer)
 
 ####################################################################
 
@@ -81,8 +81,43 @@ def get_codon_for_amino_acids(amino_acids):
     :rtype: set, float
         returns two values the set of most efficient codons for the input set list, e.g. {'RYA', 'RYH', 'RYC', 'RYW', 'RYM', 'RYY', 'RYT'} and the achieved efficiency e.g. 0.75
     """
+    
+    amino_length = len(amino_acids)
+    print(amino_length)
 
-    pass
+    comb = set(product(expanded_code.keys(), expanded_code.keys(),expanded_code.keys()))
+    comb_list = [combinations for combinations in comb]
+
+    coded_dict = {}
+    for expanded in comb_list:
+        # print('Expanded:')
+        # print(expanded)
+
+        trip_list = (set(product(expanded_code[expanded[0]], expanded_code[expanded[1]], expanded_code[expanded[2]])))
+        # print('trip_list:')
+        # print(trip_list)
+
+        trip_strings = [''.join(triplets) for triplets in trip_list]
+        # print('trip_strings:')
+        # print(trip_strings)
+        
+        # get set of amino acids from the triplets
+        amino_acid_set = {amino for trip, amino in translation_table.items() if trip in trip_strings}
+        if amino_acids.issubset(amino_acid_set): 
+            # print(amino_acid_set)
+            coded_dict[''.join(expanded)] = round(amino_length/len(amino_acid_set), 2)
+        
+        else:
+            pass
+
+    ordered_list = sorted(coded_dict.items(), key=lambda x: x[1], reverse=True)
+
+    highest = ordered_list[0][1]
+
+    efficient_codons = {codon[0] for codon in ordered_list if codon[1] == highest}
+    answer = (efficient_codons, highest)
+
+    return(answer)
 
 
 def truncate_list_of_amino_acids(amino_acids):
@@ -98,10 +133,12 @@ def truncate_list_of_amino_acids(amino_acids):
 
 if __name__ == "__main__":
     # using sets instead of lists throughout the code since the order doesn't matter and all items should be unique
-    # assert get_codon_for_amino_acids({'A', 'I', 'V'}) == ({'RYA', 'RYH', 'RYC', 'RYW', 'RYM', 'RYY', 'RYT'}, 0.75)
+    assert get_codon_for_amino_acids({'A', 'I', 'V'}) == ({'RYA', 'RYH', 'RYC', 'RYW', 'RYM', 'RYY', 'RYT'}, 0.75)
     # assert get_codon_for_amino_acids({'M', 'F'}) == ({'WTS', 'WTK', "WTB"}, 0.5)
+
+    print(get_codon_for_amino_acids({'M', 'F'}))
 
     # # "frozenset" here since this seems to be the only way to get a set of sets - see https://stackoverflow.com/questions/5931291/how-can-i-create-a-set-of-sets-in-python
     # assert truncate_list_of_amino_acids({'A', 'V', 'I'}) == {frozenset({'V', 'A'}), frozenset({'V', 'I'})}
 
-    pass
+ 
