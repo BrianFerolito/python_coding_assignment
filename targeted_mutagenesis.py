@@ -30,8 +30,9 @@ expanded_code = {'A': ['A'], 'C': ['C'], 'G': ['G'], 'T': ['T'],
 
 # helpful for validating input
 valid_nucleotides = 'ACGTWSMKRYBDHVN'
+valid_nucleotides_set = set(list(valid_nucleotides))
 valid_aa = 'GAVLIMFWPSTCYNQDEKRH*'
-
+valid_aa_set = set(list(valid_aa))
 
 def get_codon_for_amino_acids(amino_acids):
     """
@@ -41,6 +42,8 @@ def get_codon_for_amino_acids(amino_acids):
         returns two values the set of most efficient codons for the input set list, e.g. {'RYA', 'RYH', 'RYC', 'RYW', 'RYM', 'RYY', 'RYT'} and the achieved efficiency e.g. 0.75
     """
     
+    assert amino_acids.issubset(valid_aa_set), 'Invalid amino acid passed to get_codon_for_amino_acids()'
+
     # number of amino acids in the set
     amino_length = len(amino_acids)
 
@@ -60,24 +63,29 @@ def get_codon_for_amino_acids(amino_acids):
 
     encoded_dict = {}
 
-    # Loop throuhh every degenerate codon
+    # Loop through every possible degenerate codon
     for degen in comb_list:
         
-        # obtain list of all triplets created by 
-        trip_list = (set(product(expanded_code[degen[0]], expanded_code[degen[1]], expanded_code[degen[2]])))
-        trip_strings = [''.join(triplets) for triplets in trip_list]
+        # obtain sets of all triplets created by the degenerate codon
+        trip_set = (set(product(expanded_code[degen[0]], expanded_code[degen[1]], expanded_code[degen[2]])))
+        trip_strings = [''.join(triplets) for triplets in trip_set]
         
         # get set of amino acids from the triplets
         amino_acid_set = {amino for trip, amino in translation_table.items() if trip in trip_strings}
+
+        # if there is a stop codon produced by the degenerate codon skip over it
+        if '*' not in amino_acids and '*' in amino_acid_set:
+            continue
 
         # make sure all the amino acids we want to be coded are present in set
         if amino_acids.issubset(amino_acid_set): 
             # add the degenerate codon as the key with the efficiency as the value
             encoded_dict[''.join(degen)] = round(amino_length/len(amino_acid_set), 2)
 
-    # sort the dict by value and return a list
+    # sort the dict by value and return a list of tuples
     ordered_list = sorted(encoded_dict.items(), key=lambda x: x[1], reverse=True)
 
+    # obtain the highest efficiency from the first element of the descending ordered list
     highest_efficiency = ordered_list[0][1]
 
     # obtain all degenerate codons with the highest efficiency
@@ -104,7 +112,7 @@ if __name__ == "__main__":
 
     print(get_codon_for_amino_acids({'A', 'I', 'V'}))
     print(get_codon_for_amino_acids({'M', 'F'}))
-    print(get_codon_for_amino_acids({'L', 'R'}))
+    print(get_codon_for_amino_acids({'L', 'R', 'W', 'Y', '*'}))
 
     # # "frozenset" here since this seems to be the only way to get a set of sets - see https://stackoverflow.com/questions/5931291/how-can-i-create-a-set-of-sets-in-python
     # assert truncate_list_of_amino_acids({'A', 'V', 'I'}) == {frozenset({'V', 'A'}), frozenset({'V', 'I'})}
