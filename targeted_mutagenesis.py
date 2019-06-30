@@ -47,14 +47,11 @@ Find the expanded code that intersects with each list, ie all of the letters con
 
 test_set = {'A', 'I', 'V'}
 
-#assert statements checking to make sure the amino acid exixts in the translatable
-pos1_list = [nuc[0] for nuc, amino in translation_table.items() if amino in test_set]
-pos2_list = [nuc[1] for nuc, amino in translation_table.items() if amino in test_set]
-pos3_list = [nuc[2] for nuc, amino in translation_table.items() if amino in test_set]
 
-pos1_set = set(pos1_list)
-pos2_set = set(pos2_list)
-pos3_set = set(pos3_list)
+#assert statements checking to make sure the amino acid exixts in the translatable
+pos1_set = {nuc[0] for nuc, amino in translation_table.items() if amino in test_set}
+pos2_set = {nuc[1] for nuc, amino in translation_table.items() if amino in test_set}
+pos3_set = {nuc[2] for nuc, amino in translation_table.items() if amino in test_set}
 
 print('Pos 1:')
 print(pos1_set)
@@ -71,17 +68,25 @@ pos_dict = {
     'pos3' : pos3_set
 }
 
-# This collects all the expanded codes containing the amino acids
-aa_list = {key:value for (key,value) in expanded_code.items() if pos_dict['pos2'].issubset(set(expanded_code[key]))}
-print(aa_list)
-# (pos_dict['pos2'].issubset(set(expanded_code['C'])))
+# This collects all the expanded codes containing all the amino acids
+pos1_dict = {key:value for (key,value) in expanded_code.items() if pos_dict['pos1'].issubset(set(expanded_code[key]))}
+pos2_dict = {key:value for (key,value) in expanded_code.items() if pos_dict['pos2'].issubset(set(expanded_code[key]))}
+# pos3_dict = {key:value for (key,value) in expanded_code.items() if pos_dict['pos3'].issubset(set(expanded_code[key]))}
+
+# print(pos1_code_dict)
+
 
 # this way will keep the key value pair if any nucleotide in that postion is present
-pos2_dict = {key:value for (key,value) in expanded_code.items() if len(pos_dict['pos2'].intersection(set(expanded_code[key]))) > 0}
-# print(pos2_dict)
+# pos1_dict = {key:value for (key,value) in expanded_code.items() if len(pos_dict['pos1'].intersection(set(expanded_code[key]))) > 0}
+# pos2_dict = {key:value for (key,value) in expanded_code.items() if len(pos_dict['pos1'].intersection(set(expanded_code[key]))) > 0}
 
-print(len(pos_dict['pos2'].intersection(set(expanded_code['G']))))
 
+pos3_dict = {key:value for (key,value) in expanded_code.items() if len(pos_dict['pos3'].intersection(set(expanded_code[key]))) > 0}
+
+comb = (set(product(pos1_dict.keys(), pos2_dict.keys(),pos3_dict.keys())))
+
+for combinations in comb:
+    print((combinations))
 
 ####################################################################
 
