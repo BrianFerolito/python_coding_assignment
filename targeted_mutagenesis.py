@@ -1,6 +1,5 @@
 from itertools import product, combinations
 from collections import Counter
-import pprint
 from os.path import join
 
 
@@ -34,46 +33,6 @@ valid_nucleotides = 'ACGTWSMKRYBDHVN'
 valid_aa = 'GAVLIMFWPSTCYNQDEKRH*'
 
 
-####################################################################
-
-
-# test_set = {'A', 'I', 'V'}
-
-# test_length = len(test_set)
-
-# comb = set(product(expanded_code.keys(), expanded_code.keys(),expanded_code.keys()))
-# comb_list = [combinations for combinations in comb]
-
-# coded_dict = {}
-# for expanded in comb_list:
-#     trip_list = (set(product(expanded_code[expanded[0]], expanded_code[expanded[1]], expanded_code[expanded[2]])))
-#     trip_strings = [''.join(triplets) for triplets in trip_list]
-
-#     # get list of amino acids from the triplets
-#     amino_acids = {amino for trip, amino in translation_table.items() if trip in trip_strings}
-#     if test_set.issubset(amino_acids): 
-#         # print(''.join(expanded))
-#         # print(amino_acids)
-#         # print(test_length/len(amino_acids))
-
-#         coded_dict[''.join(expanded)] = round(test_length/len(amino_acids), 2)
-    
-#     else:
-#         pass
-
-# # print(coded_dict)
-# # print(sorted(coded_dict.items(), key=lambda x: x[1], reverse=True))
-# ordered_list = sorted(coded_dict.items(), key=lambda x: x[1], reverse=True)
-
-# highest = ordered_list[0][1]
-
-# efficient_codons = {codon[0] for codon in ordered_list if codon[1] == highest}
-# answer = (efficient_codons, highest)
-
-# print(answer)
-
-####################################################################
-
 def get_codon_for_amino_acids(amino_acids):
     """
     :param amino_acids: set
@@ -84,17 +43,10 @@ def get_codon_for_amino_acids(amino_acids):
     
     amino_length = len(amino_acids)
 
-    #assert statements checking to make sure the amino acid exixts in the translatable
     pos1_set = {nuc[0] for nuc, amino in translation_table.items() if amino in amino_acids}
     pos2_set = {nuc[1] for nuc, amino in translation_table.items() if amino in amino_acids}
     pos3_set = {nuc[2] for nuc, amino in translation_table.items() if amino in amino_acids}
 
-    print('Pos 1:')
-    print(pos1_set)
-    print('Pos 2:')
-    print(pos2_set)
-    print('Pos 3:')
-    print(pos3_set)
 
     ####################################################################
 
@@ -103,48 +55,24 @@ def get_codon_for_amino_acids(amino_acids):
         'pos2' : pos2_set,
         'pos3' : pos3_set
     }
-
-    # This collects all the expanded codes containing all the amino acids
-    pos1_dict = {key:value for (key,value) in expanded_code.items() if pos_dict['pos1'].issubset(set(expanded_code[key]))}
-    pos2_dict = {key:value for (key,value) in expanded_code.items() if pos_dict['pos2'].issubset(set(expanded_code[key]))}
-    # pos3_dict = {key:value for (key,value) in expanded_code.items() if pos_dict['pos3'].issubset(set(expanded_code[key]))}
-
-    # print(pos1_code_dict)
-
-
-    # this way will keep the key value pair if any nucleotide in that postion is present
-    # pos1_dict = {key:value for (key,value) in expanded_code.items() if len(pos_dict['pos1'].intersection(set(expanded_code[key]))) > 0}
-    # pos2_dict = {key:value for (key,value) in expanded_code.items() if len(pos_dict['pos1'].intersection(set(expanded_code[key]))) > 0}
-
-
-    pos3_dict = {key:value for (key,value) in expanded_code.items() if len(pos_dict['pos3'].intersection(set(expanded_code[key]))) > 0}
-
+   
+    pos1_dict = {key:value for (key,value) in expanded_code.items() if set(expanded_code[key]).issubset(pos_dict['pos1'])}
+    pos2_dict = {key:value for (key,value) in expanded_code.items() if set(expanded_code[key]).issubset(pos_dict['pos2'])}
+    pos3_dict = {key:value for (key,value) in expanded_code.items() if set(expanded_code[key]).issubset(pos_dict['pos3'])}
+    
     comb = (set(product(pos1_dict.keys(), pos2_dict.keys(),pos3_dict.keys())))
-
-    # comb = set(product(expanded_code.keys(), expanded_code.keys(),expanded_code.keys()))
     comb_list = [combinations for combinations in comb]
 
     coded_dict = {}
     for expanded in comb_list:
-        # print('Expanded:')
-        # print(expanded)
-
+        
         trip_list = (set(product(expanded_code[expanded[0]], expanded_code[expanded[1]], expanded_code[expanded[2]])))
-        # print('trip_list:')
-        # print(trip_list)
-
         trip_strings = [''.join(triplets) for triplets in trip_list]
-        # print('trip_strings:')
-        # print(trip_strings)
         
         # get set of amino acids from the triplets
         amino_acid_set = {amino for trip, amino in translation_table.items() if trip in trip_strings}
         if amino_acids.issubset(amino_acid_set): 
-            # print(amino_acid_set)
             coded_dict[''.join(expanded)] = round(amino_length/len(amino_acid_set), 2)
-        
-        else:
-            pass
 
     ordered_list = sorted(coded_dict.items(), key=lambda x: x[1], reverse=True)
 
@@ -170,9 +98,11 @@ def truncate_list_of_amino_acids(amino_acids):
 if __name__ == "__main__":
     # using sets instead of lists throughout the code since the order doesn't matter and all items should be unique
     assert get_codon_for_amino_acids({'A', 'I', 'V'}) == ({'RYA', 'RYH', 'RYC', 'RYW', 'RYM', 'RYY', 'RYT'}, 0.75)
-    # assert get_codon_for_amino_acids({'M', 'F'}) == ({'WTS', 'WTK', "WTB"}, 0.5)
+    assert get_codon_for_amino_acids({'M', 'F'}) == ({'WTS', 'WTK', "WTB"}, 0.5)
 
+    print(get_codon_for_amino_acids({'A', 'I', 'V'}))
     print(get_codon_for_amino_acids({'M', 'F'}))
+    print(get_codon_for_amino_acids({'L', 'R'}))
 
     # # "frozenset" here since this seems to be the only way to get a set of sets - see https://stackoverflow.com/questions/5931291/how-can-i-create-a-set-of-sets-in-python
     # assert truncate_list_of_amino_acids({'A', 'V', 'I'}) == {frozenset({'V', 'A'}), frozenset({'V', 'I'})}
