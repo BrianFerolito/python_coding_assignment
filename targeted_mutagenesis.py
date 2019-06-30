@@ -1,6 +1,8 @@
 from itertools import product, combinations
 from collections import Counter
 import pprint
+from os.path import join
+
 
 translation_table = {'TTT': 'F', 'TCT': 'S', 'TAT': 'Y', 'TGT': 'C',
                      'TTC': 'F', 'TCC': 'S', 'TAC': 'Y', 'TGC': 'C',
@@ -47,6 +49,7 @@ Find the expanded code that intersects with each list, ie all of the letters con
 
 test_set = {'A', 'I', 'V'}
 
+test_length = len(test_set)
 
 #assert statements checking to make sure the amino acid exixts in the translatable
 pos1_set = {nuc[0] for nuc, amino in translation_table.items() if amino in test_set}
@@ -83,13 +86,53 @@ pos2_dict = {key:value for (key,value) in expanded_code.items() if pos_dict['pos
 
 pos3_dict = {key:value for (key,value) in expanded_code.items() if len(pos_dict['pos3'].intersection(set(expanded_code[key]))) > 0}
 
-comb = (set(product(pos1_dict.keys(), pos2_dict.keys(),pos3_dict.keys())))
+comb = set(product(pos1_dict.keys(), pos2_dict.keys(),pos3_dict.keys()))
 
 for combinations in comb:
     print((combinations))
 
 ####################################################################
 
+comb_list = [combinations for combinations in comb]
+
+# # print(comb_list)
+
+# test = comb_list[0]
+
+# trip_list = (set(product(expanded_code[test[0]], expanded_code[test[1]], expanded_code[test[2]])))
+
+# # get list of nucleotide triplets as a string
+# trip_strings = [''.join(triplets) for triplets in trip_list]
+# print(trip_strings)
+
+# # get list of amino acids from the triplets
+# amino_acids = {amino for trip, amino in translation_table.items() if trip in trip_strings}
+
+# print(amino_acids)
+
+# print(test_length/len(amino_acids))
+
+coded_dict = {}
+for expanded in comb_list:
+    trip_list = (set(product(expanded_code[expanded[0]], expanded_code[expanded[1]], expanded_code[expanded[2]])))
+    trip_strings = [''.join(triplets) for triplets in trip_list]
+    print(trip_strings)
+    # get list of amino acids from the triplets
+    amino_acids = {amino for trip, amino in translation_table.items() if trip in trip_strings}
+    if test_set.issubset(amino_acids): 
+        print(''.join(expanded))
+        print(amino_acids)
+        print(test_length/len(amino_acids))
+
+        coded_dict[''.join(expanded)] = round(test_length/len(amino_acids), 2)
+    
+    else:
+        pass
+
+print(coded_dict)
+print(sorted(coded_dict.items(), key=lambda x: x[1], reverse=True))
+
+####################################################################
 
 def get_codon_for_amino_acids(amino_acids):
     """
