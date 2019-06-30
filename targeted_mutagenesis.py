@@ -41,47 +41,49 @@ def get_codon_for_amino_acids(amino_acids):
         returns two values the set of most efficient codons for the input set list, e.g. {'RYA', 'RYH', 'RYC', 'RYW', 'RYM', 'RYY', 'RYT'} and the achieved efficiency e.g. 0.75
     """
     
+    # number of amino acids in the set
     amino_length = len(amino_acids)
 
+    # obtain all nucleotides possible at each position
     pos1_set = {nuc[0] for nuc, amino in translation_table.items() if amino in amino_acids}
     pos2_set = {nuc[1] for nuc, amino in translation_table.items() if amino in amino_acids}
     pos3_set = {nuc[2] for nuc, amino in translation_table.items() if amino in amino_acids}
 
-
-    ####################################################################
-
-    pos_dict = {
-        'pos1' : pos1_set,
-        'pos2' : pos2_set,
-        'pos3' : pos3_set
-    }
-   
-    pos1_dict = {key:value for (key,value) in expanded_code.items() if set(expanded_code[key]).issubset(pos_dict['pos1'])}
-    pos2_dict = {key:value for (key,value) in expanded_code.items() if set(expanded_code[key]).issubset(pos_dict['pos2'])}
-    pos3_dict = {key:value for (key,value) in expanded_code.items() if set(expanded_code[key]).issubset(pos_dict['pos3'])}
+    # narrow done the possible key value pairs from the expanded code dict for each nucleotide position
+    pos1_dict = {key:value for (key,value) in expanded_code.items() if set(expanded_code[key]).issubset(pos1_set)}
+    pos2_dict = {key:value for (key,value) in expanded_code.items() if set(expanded_code[key]).issubset(pos2_set)}
+    pos3_dict = {key:value for (key,value) in expanded_code.items() if set(expanded_code[key]).issubset(pos3_set)}
     
+    # get all possible degenerate codons and store the combinations in a list
     comb = (set(product(pos1_dict.keys(), pos2_dict.keys(),pos3_dict.keys())))
     comb_list = [combinations for combinations in comb]
 
-    coded_dict = {}
-    for expanded in comb_list:
+    encoded_dict = {}
+
+    # Loop throuhh every degenerate codon
+    for degen in comb_list:
         
-        trip_list = (set(product(expanded_code[expanded[0]], expanded_code[expanded[1]], expanded_code[expanded[2]])))
+        # obtain list of all triplets created by 
+        trip_list = (set(product(expanded_code[degen[0]], expanded_code[degen[1]], expanded_code[degen[2]])))
         trip_strings = [''.join(triplets) for triplets in trip_list]
         
         # get set of amino acids from the triplets
         amino_acid_set = {amino for trip, amino in translation_table.items() if trip in trip_strings}
+
+        # make sure all the amino acids we want to be coded are present in set
         if amino_acids.issubset(amino_acid_set): 
-            coded_dict[''.join(expanded)] = round(amino_length/len(amino_acid_set), 2)
+            # add the degenerate codon as the key with the efficiency as the value
+            encoded_dict[''.join(degen)] = round(amino_length/len(amino_acid_set), 2)
 
-    ordered_list = sorted(coded_dict.items(), key=lambda x: x[1], reverse=True)
+    # sort the dict by value and return a list
+    ordered_list = sorted(encoded_dict.items(), key=lambda x: x[1], reverse=True)
 
-    highest = ordered_list[0][1]
+    highest_efficiency = ordered_list[0][1]
 
-    efficient_codons = {codon[0] for codon in ordered_list if codon[1] == highest}
-    answer = (efficient_codons, highest)
+    # obtain all degenerate codons with the highest efficiency
+    efficient_codons = {codon[0] for codon in ordered_list if codon[1] == highest_efficiency}
 
-    return(answer)
+    return((efficient_codons, highest_efficiency))
 
 
 def truncate_list_of_amino_acids(amino_acids):
