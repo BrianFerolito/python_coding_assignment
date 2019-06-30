@@ -83,9 +83,45 @@ def get_codon_for_amino_acids(amino_acids):
     """
     
     amino_length = len(amino_acids)
-    print(amino_length)
 
-    comb = set(product(expanded_code.keys(), expanded_code.keys(),expanded_code.keys()))
+    #assert statements checking to make sure the amino acid exixts in the translatable
+    pos1_set = {nuc[0] for nuc, amino in translation_table.items() if amino in amino_acids}
+    pos2_set = {nuc[1] for nuc, amino in translation_table.items() if amino in amino_acids}
+    pos3_set = {nuc[2] for nuc, amino in translation_table.items() if amino in amino_acids}
+
+    print('Pos 1:')
+    print(pos1_set)
+    print('Pos 2:')
+    print(pos2_set)
+    print('Pos 3:')
+    print(pos3_set)
+
+    ####################################################################
+
+    pos_dict = {
+        'pos1' : pos1_set,
+        'pos2' : pos2_set,
+        'pos3' : pos3_set
+    }
+
+    # This collects all the expanded codes containing all the amino acids
+    pos1_dict = {key:value for (key,value) in expanded_code.items() if pos_dict['pos1'].issubset(set(expanded_code[key]))}
+    pos2_dict = {key:value for (key,value) in expanded_code.items() if pos_dict['pos2'].issubset(set(expanded_code[key]))}
+    # pos3_dict = {key:value for (key,value) in expanded_code.items() if pos_dict['pos3'].issubset(set(expanded_code[key]))}
+
+    # print(pos1_code_dict)
+
+
+    # this way will keep the key value pair if any nucleotide in that postion is present
+    # pos1_dict = {key:value for (key,value) in expanded_code.items() if len(pos_dict['pos1'].intersection(set(expanded_code[key]))) > 0}
+    # pos2_dict = {key:value for (key,value) in expanded_code.items() if len(pos_dict['pos1'].intersection(set(expanded_code[key]))) > 0}
+
+
+    pos3_dict = {key:value for (key,value) in expanded_code.items() if len(pos_dict['pos3'].intersection(set(expanded_code[key]))) > 0}
+
+    comb = (set(product(pos1_dict.keys(), pos2_dict.keys(),pos3_dict.keys())))
+
+    # comb = set(product(expanded_code.keys(), expanded_code.keys(),expanded_code.keys()))
     comb_list = [combinations for combinations in comb]
 
     coded_dict = {}
