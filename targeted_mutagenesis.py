@@ -63,7 +63,7 @@ def get_codon_for_amino_acids(amino_acids):
         pos2_set = {nuc[1] for nuc, amino in translation_table.items() if amino in amino_acids}
         pos3_set = {nuc[2] for nuc, amino in translation_table.items() if amino in amino_acids}
 
-        # narrow done the possible key value pairs from the expanded code dict for each nucleotide position
+        # narrow down the possible key value pairs from the expanded code dict for each nucleotide position
         pos1_dict = {key:value for (key,value) in expanded_code.items() if set(expanded_code[key]).issubset(pos1_set)}
         pos2_dict = {key:value for (key,value) in expanded_code.items() if set(expanded_code[key]).issubset(pos2_set)}
         pos3_dict = {key:value for (key,value) in expanded_code.items() if set(expanded_code[key]).issubset(pos3_set)}
