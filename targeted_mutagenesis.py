@@ -72,16 +72,18 @@ def get_codon_for_amino_acids(amino_acids):
         
         # get set of amino acids from the triplets
         amino_acid_set = {amino for trip, amino in translation_table.items() if trip in trip_strings}
-
+        
         # if there is a stop codon produced by the degenerate codon skip over it
         if '*' not in amino_acids and '*' in amino_acid_set:
             continue
-
+        
         # make sure all the amino acids we want to be coded are present in set
         if amino_acids.issubset(amino_acid_set): 
             # add the degenerate codon as the key with the efficiency as the value
             encoded_dict[''.join(degen)] = round(amino_length/len(amino_acid_set), 2)
 
+    assert len(encoded_dict) != 0, 'There are no degenerate codons that code for all amino acids\n Perhaps they all coded for a stop codon and were removed'
+    
     # sort the dict by value and return a list of tuples
     ordered_list = sorted(encoded_dict.items(), key=lambda x: x[1], reverse=True)
 
@@ -102,19 +104,25 @@ def truncate_list_of_amino_acids(amino_acids):
         the set of sets of amino acids that can be coded with 100% efficiency, i.e. {frozenset({'V', 'A'}), frozenset({'V', 'I'})}
     """
 
-    pass
+    if get_codon_for_amino_acids(amino_acids)[1] == 1.0:
+        return(amino_acids)
 
+    else:
+        
+        for i in range(1,len(amino_acids)):
 
+            reduced_list = (list(combinations(amino_acids, len(amino_acids) - i)))
+            codon_set = {frozenset(amino_set) for amino_set in reduced_list if get_codon_for_amino_acids(set(amino_set))[1] == 1.0}
+
+            if len(codon_set) != 0:
+                return(codon_set)
+                
 if __name__ == "__main__":
     # using sets instead of lists throughout the code since the order doesn't matter and all items should be unique
     assert get_codon_for_amino_acids({'A', 'I', 'V'}) == ({'RYA', 'RYH', 'RYC', 'RYW', 'RYM', 'RYY', 'RYT'}, 0.75)
     assert get_codon_for_amino_acids({'M', 'F'}) == ({'WTS', 'WTK', "WTB"}, 0.5)
 
-    print(get_codon_for_amino_acids({'A', 'I', 'V'}))
-    print(get_codon_for_amino_acids({'M', 'F'}))
-    print(get_codon_for_amino_acids({'L', 'R', 'W', 'Y', '*'}))
-
     # # "frozenset" here since this seems to be the only way to get a set of sets - see https://stackoverflow.com/questions/5931291/how-can-i-create-a-set-of-sets-in-python
-    # assert truncate_list_of_amino_acids({'A', 'V', 'I'}) == {frozenset({'V', 'A'}), frozenset({'V', 'I'})}
+    assert truncate_list_of_amino_acids({'A', 'V', 'I'}) == {frozenset({'V', 'A'}), frozenset({'V', 'I'})}
 
  
