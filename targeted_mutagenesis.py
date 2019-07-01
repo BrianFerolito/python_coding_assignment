@@ -57,11 +57,15 @@ def get_codon_for_amino_acids(amino_acids):
     pos2_dict = {key:value for (key,value) in expanded_code.items() if set(expanded_code[key]).issubset(pos2_set)}
     pos3_dict = {key:value for (key,value) in expanded_code.items() if set(expanded_code[key]).issubset(pos3_set)}
     
-    # get all possible degenerate codons and store the combinations in a list
+    # get all possible degenerate codons and store them in a list
     comb = (set(product(pos1_dict.keys(), pos2_dict.keys(),pos3_dict.keys())))
     comb_list = [combinations for combinations in comb]
 
     encoded_dict = {}
+
+    ########
+    stop_codons = []
+    ########
 
     # Loop through every possible degenerate codon
     for degen in comb_list:
@@ -82,7 +86,7 @@ def get_codon_for_amino_acids(amino_acids):
             # add the degenerate codon as the key with the efficiency as the value
             encoded_dict[''.join(degen)] = round(amino_length/len(amino_acid_set), 2)
 
-    assert len(encoded_dict) != 0, 'There are no degenerate codons that code for all amino acids\n Perhaps they all coded for a stop codon and were removed'
+    assert len(encoded_dict) != 0, '\nThere are no degenerate codons that code for all amino acids\nPerhaps they all coded for a stop codon and were removed'
     
     # sort the dict by value and return a list of tuples
     ordered_list = sorted(encoded_dict.items(), key=lambda x: x[1], reverse=True)
@@ -92,6 +96,10 @@ def get_codon_for_amino_acids(amino_acids):
 
     # obtain all degenerate codons with the highest efficiency
     efficient_codons = {codon[0] for codon in ordered_list if codon[1] == highest_efficiency}
+
+    # for codon in efficient_codons:
+    #     if codon in stop_codons:
+    #         print(f'Warning: Degenerate codon {codon} codes for a stop codon')
 
     return((efficient_codons, highest_efficiency))
 
@@ -116,13 +124,16 @@ def truncate_list_of_amino_acids(amino_acids):
 
             if len(codon_set) != 0:
                 return(codon_set)
-                
+
+
 if __name__ == "__main__":
     # using sets instead of lists throughout the code since the order doesn't matter and all items should be unique
     assert get_codon_for_amino_acids({'A', 'I', 'V'}) == ({'RYA', 'RYH', 'RYC', 'RYW', 'RYM', 'RYY', 'RYT'}, 0.75)
     assert get_codon_for_amino_acids({'M', 'F'}) == ({'WTS', 'WTK', "WTB"}, 0.5)
 
-    # # "frozenset" here since this seems to be the only way to get a set of sets - see https://stackoverflow.com/questions/5931291/how-can-i-create-a-set-of-sets-in-python
+
+    print(truncate_list_of_amino_acids({'A', 'V', 'I', 'W', 'D'}))
+    # "frozenset" here since this seems to be the only way to get a set of sets - see https://stackoverflow.com/questions/5931291/how-can-i-create-a-set-of-sets-in-python
     assert truncate_list_of_amino_acids({'A', 'V', 'I'}) == {frozenset({'V', 'A'}), frozenset({'V', 'I'})}
 
  
